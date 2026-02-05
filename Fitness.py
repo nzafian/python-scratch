@@ -63,7 +63,9 @@ def add_exercises():
 
     conn = get_connection()
     cur = conn.cursor()
+
 #remember to use ? instead of %s
+    
     cur.execute(
         "INSERT INTO exercises (log_date, name, minutes, calories_burner) VALUES (?, ?, ?, ?)"
         (today, name, minutes, calories_burned)
@@ -73,6 +75,26 @@ def add_exercises():
     conn.close()
     print("Exercise has been added")
 
+def chicken_calc():
+    average_chickencal = {
+        "breast": 165,
+        "thigh": 150,
+        "strips": 125
+    }
+
+    chicken_type = input("Type of chicken (breast, thigh, strips): ")
+    amount = int(input("Please enter amount of chicken: "))
+
+    if chicken_type not in average_chickencal:
+        print("Not currently listed under chicken types.")
+        return None
+    
+    calories = amount * average_chickencal[chicken_type]
+    print(f"Calorie estimate: {calories}")
+
+    return calories
+# This is a rough estimate and I am assuming that these are all grilled which is how I normally eat my chicken at home
+
 def summary():
     today = date.today()
 
@@ -80,8 +102,7 @@ def summary():
     cur = conn.cursor()
 
     cur.execute(
-        "SELECT SUM(calories) FROM food WHERE log_date = ?", 
-        (today,)
+        "SELECT SUM(calories) FROM food WHERE log_date = ?", (today,)
     )
     calorie_intake = cur.fetchone()[0]
     if calorie_intake is None:
@@ -90,8 +111,7 @@ def summary():
 #covered edge case of 0 calories inputed, and properly indexed fetchone as it is slecting just the sum from the day logged
     
     cur.execute(
-        "SELECT SUM(calories_burned) FROM exercise WHERE log_date = ?",
-        (today,)
+        "SELECT SUM(calories_burned) FROM exercise WHERE log_date = ?", (today,)
     )
 
     calories_burnt = cur.fetchone()[0]
@@ -108,4 +128,5 @@ def summary():
     print(f"Net calories after exercise: {net_calories}")
 
 def main():
+    
     pass
